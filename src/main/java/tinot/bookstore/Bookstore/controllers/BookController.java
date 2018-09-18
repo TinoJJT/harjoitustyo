@@ -1,5 +1,8 @@
 package tinot.bookstore.Bookstore.controllers;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import tinot.bookstore.Bookstore.models.Book;
 import tinot.bookstore.Bookstore.models.BookRepository;
@@ -24,11 +28,24 @@ public class BookController {
 	@Autowired
 	private CategoryRepository cRepository;
 
+	//returns thymeleaf of all books
 	@RequestMapping(value="/booklist", method=RequestMethod.GET)
 	public String bookList(Model model) {	
         model.addAttribute("books", bRepository.findAll());
 		return "booklist";
 	}
+	
+	// RESTful service to get all books
+    @RequestMapping(value="/books", method = RequestMethod.GET)
+    public @ResponseBody List<Book> bookListRest() {	
+        return (List<Book>) bRepository.findAll();
+    } 
+    
+ // RESTful service to get book by id
+    @RequestMapping(value="/book/{isbn}", method = RequestMethod.GET)
+    public @ResponseBody Optional<Book> findBookRest(@PathVariable("isbn") Long isbn) {	
+    	return bRepository.findById(isbn);
+    } 
 	
 	@RequestMapping(value = "/add")
     public String addBook(Model model){
