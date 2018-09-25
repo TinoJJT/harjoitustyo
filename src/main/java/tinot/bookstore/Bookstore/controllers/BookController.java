@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,12 @@ public class BookController {
 	
 	@Autowired
 	private CategoryRepository cRepository;
+	
+	
+	@RequestMapping(value="/login")
+    public String login() {	
+        return "login";
+    }	
 
 	//returns thymeleaf of all books
 	@RequestMapping(value="/booklist", method=RequestMethod.GET)
@@ -47,6 +54,7 @@ public class BookController {
     	return bRepository.findById(isbn);
     } 
 	
+    @PreAuthorize("hasAuthority('ADMIN')")
 	@RequestMapping(value = "/add")
     public String addBook(Model model){
     	model.addAttribute("book", new Book());
@@ -60,6 +68,7 @@ public class BookController {
         return "redirect:booklist";
     }   
 	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@RequestMapping(value = "/edit/{isbn}", method = RequestMethod.GET)
     public String editBook(@PathVariable("isbn") Long isbn, Model model){
 		Book book = bRepository.findById(isbn).get(	);
